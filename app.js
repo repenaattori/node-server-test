@@ -4,6 +4,10 @@ var app = express();
 
 app.use(express.static('build'))
 
+app.get('/test', function (req, res) {
+  res.send('Node in render working!');
+});
+
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, function () {
