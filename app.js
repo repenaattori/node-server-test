@@ -2,7 +2,7 @@ var express = require('express');
 
 var app = express();
 
-app.use(express.static('client/build'))
+app.use(express.static('build'))
 
 const PORT = process.env.PORT || 3001
 
