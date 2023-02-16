@@ -2,10 +2,10 @@ var express = require('express');
 
 var app = express();
 
-app.use(express.static('client/build/'))
+app.use(express.static('client/build'))
 
+const PORT = process.env.PORT || 3001
 
-
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(PORT, function () {
+  console.log('Server running on port'+PORT);
 });
