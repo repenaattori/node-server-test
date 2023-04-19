@@ -8,6 +8,10 @@ app.get('/test', function (req, res) {
   res.send('Node in render working!');
 });
 
+app.get('/', function (req, res) {
+  res.send('<h1>NICE</h1>');
+});
+
 const PORT = process.env.PORT || 3001
 
 app.listen(PORT, function () {
