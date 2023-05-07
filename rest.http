@@ -1,0 +1,23 @@
+# POST http://localhost:3001/customer HTTP/1.1
+# Content-Type: application/x-www-form-urlencoded 
+
+# fname=Reima&lname=Riihimäki
+
+# POST http://localhost:3001/customer HTTP/1.1
+# Content-Type: multipart/form-data;boundary=x
+
+# --x
+# Content-Disposition: form-data; name="fname"
+
+# Reima
+# --x
+# Content-Disposition: form-data; name="lname"
+
+# Riihimäki
+# --x--
+
+
+
+
+
+
