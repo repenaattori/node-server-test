@@ -1,7 +1,8 @@
 CREATE TABLE customer(
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    fname VARCHAR(255),
-    lname VARCHAR(255)
-)
+    first_name VARCHAR(255),
+    last_name VARCHAR(255)
+);
 
-INSERT INTO customer (fname, lname) VALUES ('')
+INSERT INTO customer (first_name, last_name) VALUES ('Matti', 'Meikäläinen'),('John', 'Doe'),('Lisa', 'Simpson');
+
