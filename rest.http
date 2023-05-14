@@ -4,18 +4,26 @@
 # fname=Reima&lname=Riihimäki
 
 # POST http://localhost:3001/customer HTTP/1.1
-# Content-Type: multipart/form-data;boundary=x
+# Content-Type: multipart/form-data;boundary=abcdefg
 
-# --x
+# --abcdefg
 # Content-Disposition: form-data; name="fname"
 
 # Reima
-# --x
+# --abcdefg
 # Content-Disposition: form-data; name="lname"
 
 # Riihimäki
-# --x--
+# --abcdefg--
 
+
+POST http://localhost:3001/order HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "fname": "Reima",
+#     "lname": "Riihimäki"
+# }
 
 
 
