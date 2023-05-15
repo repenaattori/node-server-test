@@ -51,34 +51,34 @@ app.post('transaktio', async (req,res) => {
 app.post('/order', async (req,res) => {
 
   let connection = null;
-
-  let orderData = req.body;
-
-  orderData = {requiredDate: '2024-12-12', customerId: 103}
-
+  
   try{  
+
+    let orderData = req.body; 
+
     connection = await mysql.createConnection(conf);
     await connection.execute("SET time_zone=?", ['+00:00']);
-
     await connection.beginTransaction();
     
-    
-    let [idRes] = await connection.execute('SELECT MAX(orderNumber) AS maxId FROM orders');
-    let orderNumber = idRes[0].maxId+1;
+    let [result] = await connection.execute('SELECT MAX(orderNumber) AS maxId FROM orders');
+    let orderNumber = result[0].maxId + 1;
 
     await connection.execute('INSERT INTO orders (orderNumber,orderDate,requiredDate,customerNumber, status) ' + 
-    'VALUES (?,NOW(),?,?,?)', [orderNumber, orderData.requiredDate, orderData.customerId, 'In Process']);
+      'VALUES (?,NOW(),?,?,?)', [orderNumber, orderData.requiredDate, orderData.customerId, 'In Process']);
 
-    //orderdetails
-    //linenumber on järjestysnumero tilauksessa.
-    //products
+    let sqlCommand = "INSERT INTO orderdetails (orderNumber, productCode, quantityOrdered, priceEach, orderLineNumber) VALUES ";
+    let params = [];
 
-    //const [orderId] = await connection.execute('SELECT LAST_INSERT_ID()');
-    
-    // let params = []
-    // await connection.execute('INSERT INTO orderDetails (orderData,requiredDate,customerId) ' + 
-    // 'VALUES (NOW(),?,?)', [orderData.requiredDate, orderData.customerId]);
+    orderData.products.forEach((p,i) => {
+        params.push(orderNumber, p.code, p.quantity, p.unitPrice, i+1);
+        sqlCommand += "(?,?,?,?,?),";
+        if(i === p.length - 1){
+          sqlCommand += ","
+        }
+      }
+    );
 
+    await connection.execute(sqlCommand, params);
     await connection.commit();
 
     res.status(200).end();
@@ -89,7 +89,8 @@ app.post('/order', async (req,res) => {
     }
     res.status(500).json({error: err.message});
   }
-})
+});
+
 
 app.get('/', (req, res) => res.send('Home page'));
 
