@@ -1,10 +1,11 @@
-require('dotenv').config()
-const mysql = require('mysql2/promise');
+require('dotenv').config();
+const express = require('express');
 
+const mysql = require('mysql2/promise');
 const multer = require('multer');
+
 const upload = multer({ dest: "uploads/" });
 
-var express = require('express');
 var app = express();
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())

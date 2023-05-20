@@ -17,15 +17,59 @@
 # --abcdefg--
 
 
-POST http://localhost:3001/order HTTP/1.1
+# POST http://localhost:3001/order HTTP/1.1
 # Content-Type: application/json
 
 # {
-#     "fname": "Reima",
-#     "lname": "Riihimäki"
+#     "customerId": "1",
+#     "products": [
+#         {
+#             "id": 1,
+#             "quantity": 2
+#         },
+#         {
+#             "id": 4,
+#             "quantity": 1
+#         },
+#         {
+#             "id": 3,
+#             "quantity": 3
+#         }
+#     ]
+# }
+
+
+# POST http://localhost:3001/register HTTP/1.1
+# Content-Type: application/x-www-form-urlencoded
+
+# fname=John&lname=Doe&username=john&pw=john
+
+
+# POST http://localhost:3001/login HTTP/1.1
+# Content-Type: application/x-www-form-urlencoded
+
+# username=repe&pw=repe
+
+GET http://localhost:3001/orders HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJlcGUiLCJpYXQiOjE2ODQ0MTUyODR9._U30UC23JS4Lb9rLWWk7gasMFF3su4NZj0wu05fjAHI
+
+
+# POST http://localhost:3001/addcategory HTTP/1.1
+# Content-Type: application/json
+
+# {
+#     "name":"Kitchen electronics",
+#     "description": "Variety of differenc kitchen appliences"
 # }
 
 
 
+# POST http://localhost:3001/addproduct HTTP/1.1
+# Content-Type: application/json
 
-
+# {
+#     "name":"Helkama Kaunotar",
+#     "price": 550,
+#     "imageUrl": "helkama.jpg",
+#     "category": "Bike"
+# }
