@@ -1,4 +1,7 @@
 require('dotenv').config()
+const axios = require('axios');
+const convert = require('xml-js')
+
 const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
@@ -25,6 +28,9 @@ const conf = {
     dateStrings: false,
     timezone: '+00:00'
 }
+
+axios.get('https://www.finnkino.fi/xml/News')
+    .then( res => console.log( JSON.parse(convert.xml2json(res.data,{ compact: true, spaces: 2 }) ).News.NewsArticle[1]  ))
 
 
 /**
