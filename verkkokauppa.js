@@ -1,6 +1,6 @@
 require('dotenv').config()
 const axios = require('axios');
-const convert = require('xml-js')
+
 
 const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
@@ -29,9 +29,6 @@ const conf = {
     timezone: '+00:00'
 }
 
-axios.get('https://www.finnkino.fi/xml/News')
-    .then( res => console.log( JSON.parse(convert.xml2json(res.data,{ compact: true, spaces: 2 }) ).News.NewsArticle[1]  ))
-
 
 /**
  * Gets all the products
@@ -40,7 +37,7 @@ app.get('/products', async (req, res) => {
     try {
         const connection = await mysql.createConnection(conf);
 
-        const [rows] = await connection.execute("SELECT id, product_name name, price, image_url imgUrl  FROM product");
+        const [rows] = await connection.execute("SELECT id, product_name productName, price, image_url imageUrl, category  FROM product");
 
         res.json(rows);
 
@@ -57,7 +54,7 @@ app.get('/categories', async (req, res) => {
     try {
         const connection = await mysql.createConnection(conf);
 
-        const [rows] = await connection.execute("SELECT category_name name, category_description description FROM product_category");
+        const [rows] = await connection.execute("SELECT category_name categoryName, category_description description FROM product_category");
 
         res.json(rows);
 
@@ -70,38 +67,50 @@ app.get('/categories', async (req, res) => {
 /**
  * Adds new product category
  */
-app.post('/addcategory', async (req, res) => {
+app.post('/addcategories', async (req, res) => {
+
+    const connection = await mysql.createConnection(conf);
 
     try {
-        const connection = await mysql.createConnection(conf);
-    
-        const category = req.body;
         
-        const [info] = await connection.execute("INSERT INTO product_category VALUES (?,?)",[category.name, category.description]);
+        connection.beginTransaction();
+        const categories = req.body;
+        
+        for (const category of categories) {
+            await connection.execute("INSERT INTO product_category VALUES (?,?)",[category.categoryName, category.description]);
+        }
     
-        res.status(200).send("Category added!");
+        connection.commit();
+        res.status(200).send("Categories added!");
 
     } catch (err) {
+        connection.rollback();
         res.status(500).json({ error: err.message });
     }
 });
 
 
 /**
- * Adds new product category
- */
-app.post('/addproduct', async (req, res) => {
+ * Adds new products */
+app.post('/addproducts', async (req, res) => {
+
+    const connection = await mysql.createConnection(conf);
 
     try {
-        const connection = await mysql.createConnection(conf);
-    
-        const product = req.body;
         
-        const [info] = await connection.execute("INSERT INTO product (product_name, price, image_url,category) VALUES (?,?,?,?)",[product.name, product.price, product.imageUrl, product.category]);
+        connection.beginTransaction();
+        const products = req.body;
+        
+
+        for (const product of products) {
+            await connection.execute("INSERT INTO product (product_name, price, image_url,category) VALUES (?,?,?,?)",[product.productName, product.price, product.imageUrl, product.category]);
+        }
     
-        res.status(200).send("Product added!");
+        connection.commit();
+        res.status(200).send("Products added!");
 
     } catch (err) {
+        connection.rollback();
         res.status(500).json({ error: err.message });
     }
 });
@@ -110,7 +119,7 @@ app.post('/addproduct', async (req, res) => {
 /**
  * Place an order 
  */
-app.post('/order', async (req, res) => {
+app.post('/addorder', async (req, res) => {
 
     let connection;
 
@@ -129,7 +138,7 @@ app.post('/order', async (req, res) => {
         }
 
         connection.commit();
-        res.status(200).end();
+        res.status(200).json({orderId: orderId});
 
     } catch (err) {
         connection.rollback();
@@ -183,7 +192,7 @@ app.post('/login', upload.none(), async (req, res) => {
             const isAuth = await bcrypt.compare(pw, rows[0].pw);
             if(isAuth){
                 const token = jwt.sign({username: uname}, 'mysecretkey');
-                res.status(200).json({jwttoken: token});
+                res.status(200).json({jwtToken: token});
             }else{
                 res.status(401).end('User not authorized');
             }
@@ -200,7 +209,7 @@ app.post('/login', upload.none(), async (req, res) => {
 /**
  * Gets orders of the customer
  */
-app.get('/orders', async (req,res) => {
+app.get('/customerorders', async (req,res) => {
     
     //Get the bearer token from authorization header
     const token = req.headers.authorization.split(' ')[1];
