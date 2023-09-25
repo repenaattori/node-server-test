@@ -5,14 +5,17 @@ const axios = require('axios');
 const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
+const cors = require('cors');
 
 const multer = require('multer');
 const upload = multer({ dest: "uploads/" });
 
 var express = require('express');
 var app = express();
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
+
 
 const PORT = process.env.PORT || 3001;
 
@@ -47,6 +50,25 @@ app.get('/products', async (req, res) => {
 });
 
 /**
+ * Gets all the products in spesific category
+ */
+app.get('/categoryproducts', async (req, res) => {
+    
+    try {
+        const connection = await mysql.createConnection(conf);
+
+        const category = req.query.category;
+
+        const [rows] = await connection.execute("SELECT id, product_name productName, price, image_url imageUrl, category  FROM product WHERE category=?", [category]);
+
+        res.json(rows);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/**
  * Gets all the categories
  */
 app.get('/categories', async (req, res) => {
@@ -63,6 +85,22 @@ app.get('/categories', async (req, res) => {
     }
 });
 
+app.get('/getuserdata', async(req,res) => {
+
+    //Get the bearer token from authorization header
+    const token = req.headers.authorization.split(' ')[1];
+
+    //Verify the token. Verified token contains username
+    try{
+        const username = jwt.verify(token, 'mysecretkey').username;
+        const connection = await mysql.createConnection(conf);
+        const [rows] = await connection.execute('SELECT first_name fname, last_name lname, username FROM customer WHERE username=?',[username]);
+        res.status(200).json(rows[0]);
+    }catch(err){
+        console.log(err.message);
+        res.status(403).send('Access forbidden.');
+    }
+});
 
 /**
  * Adds new product category
@@ -179,9 +217,9 @@ app.post('/register', upload.none(), async (req,res) => {
  * Supports urlencoded or multipart
  */
 app.post('/login', upload.none(), async (req, res) => {
-
     const uname = req.body.username;
     const pw = req.body.pw;
+
 
     try {
         const connection = await mysql.createConnection(conf);
