@@ -32,6 +32,7 @@ const bcrypt = require('bcrypt');
 
 
 const PORT = process.env.PORT || 3001;
+app.use(express.static('public'));
 
 app.listen(PORT, function () {
   console.log('Server running on port ' + PORT);
