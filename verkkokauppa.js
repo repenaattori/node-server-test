@@ -290,16 +290,3 @@ async function getOrders(username){
        throw new Error(err.message);
     }
 }
-
-// app.get('/test', async (req,res) => {
-    
-//     try {
-//         const connection = await mysql.createConnection(conf);
-    
-//         const [rows] = await connection.execute('UPDATE customer SET pw=? WHERE id=1', [await bcrypt.hash('repe',10)]);
-
-//         res.send("done");
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// });
