@@ -290,3 +290,5 @@ async function getOrders(username){
        throw new Error(err.message);
     }
 }
+
+module.exports = app;
