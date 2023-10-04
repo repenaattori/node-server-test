@@ -4,6 +4,7 @@ const convert = require('xml-js')
 
 const mysql = require('mysql2/promise');
 const multer = require('multer');
+const { default: axios } = require('axios');
 
 const upload = multer({ dest: "uploads/" });
 
@@ -27,8 +28,16 @@ const conf = {
 }
 
 
-axios.get('https://www.finnkino.fi/xml/News')
-    .then( res => console.log( JSON.parse(convert.xml2json(res.data,{ compact: true, spaces: 2 }) ).News.NewsArticle[1]  ))
+axios.get('https://www.finnkino.fi/xml/News',{params: {categoryID: 1073}})
+    .then( res => {
+
+        let dataInString = convert.xml2json(res.data,{ compact: true, spaces: 2 })
+        let dataObject = JSON.parse( dataInString );
+
+        dataObject.News.NewsArticle.forEach(n => console.log(n.Title._text));
+
+     
+    })
 
 app.post('transaktio', async (req,res) => {
 
